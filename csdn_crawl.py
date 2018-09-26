@@ -46,18 +46,25 @@ def parse(driver):
 
 
 def parse_catalog(driver, catalog):
-    driver.get(catalog.url)
+    nav_url = catalog.url
+    driver.get(nav_url)
     soup = BeautifulSoup(driver.page_source, 'html.parser')
 
-    detail_urls = soup.select('#feedlist_id > li > div > div.title > h2 > a')
-
-    # 输出具体文章的URL
-    ret = catalog.articles
-    for u in detail_urls:
-        k = u.get_text().strip()
-        v = 'https://www.csdn.net' + u.get('href')
-        ret[k] = v
+    next_page = soup.select()
+    while next_page is not None:
+        detail_urls = soup.select('#feedlist_id > li > div > div.title > h2 > a')
+        # 输出具体文章的URL
+        ret = catalog.articles
+        for u in detail_urls:
+            k = u.get_text().strip()
+            v = 'https://www.csdn.net' + u.get('href')
+            ret[k] = v
     # print 'article URL list: %s.' % ret
+        # 从next_page中获取href,与基础url组成新的nav_url
+        nav_url = ''
+        driver.get(nav_url)
+        soup = BeautifulSoup(driver.page_source, 'html.parser')
+        next_page = soup.select()
     pass
 
 
